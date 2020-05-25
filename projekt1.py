@@ -3,10 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 #import matplotlib.image as mpimg
 import cv2
+from normalization import *
 
 def get_arguments():
     parser=argparse.ArgumentParser(prog='projekt1', usage='%(prog)s [options]')
-    parser.add_argument("-x", "--xxx", help="dupajas", action="store_true")
+    parser.add_argument("-n", "--normalize", help="normalize image with 3 couples of points", action="store_true")
     parser.add_argument("-y", "--yyy", help="dupas", action="store_true")
     parser.add_argument("-z", "--zzz", help="dup", action="store_true")
     parser.add_argument("-p", "--path", help="path to input png", required="True")
@@ -59,11 +60,19 @@ def transform_x(img):
 def transform_y(img):
     print("YYY")
 
-def chose_transform(options, img):
-    if str(options["xxx"]) == "True":
-        transform_x(img)
-    elif str(options["yyy"]) == "True":
-        transform_y(img)
+def chose_transform_mono(options, img):
+    if str(options["normalize"]) == "True":
+        img_out=normalize_3_points_mono(img)
+        return img_out
+   # elif str(options["yyy"]) == "True":
+    #    transform_y(img)
+        
+def chose_transform_color(options, img):
+    if str(options["normalize"]) == "True":
+        img_out=normalize_3_points_color(img)
+        return img_out
+    #elif str(options["yyy"]) == "True":
+     #   transform_y(img)
 
 def binary_mono(image, width, height):
     img_out=np.zeros_like(image)
@@ -80,33 +89,24 @@ def binary_color(image, width, height):
     for i in range(width):
         for j in range(height):
             for k in range(3):
-                img_out[i,j,k]=img[i,j,k]-20
-
-
-##            if image[i,j,0]<150 and image[i,j,1]<100 and image[i,j,2]<40:
-##                img_out[i,j,0]=0
-##                img_out[i,j,1]=0
-##                img_out[i,j,2]=0
-##            else:
-##                img_out[i,j,0]=255
-##                img_out[i,j,1]=255
-##                img_out[i,j,2]=255
-                
+                img_out[i,j,k]=img[i,j,k]-20                
     return img_out
             
 def mono_image(img):
     width=img.shape[0]
     height=img.shape[1]
-    img_out=binary_mono(img, width, height)
-    chose_transform(options, img)
+    #img_out=binary_mono(img, width, height)
+    img_out=chose_transform_mono(options, img)
+    data=calculate_count_pixels(img_out)
+    make_histogram(data)
     view_mono_images(img,img_out)
 
 
 def color_image(img):
     width=img.shape[0]
     height=img.shape[1]
-    img_out=binary_color(img, width, height) ##
-    
+    #img_out=binary_color(img, width, height) ##
+    img_out=chose_transform_color(options, img)
     view_color_images(img, img_out)
 
 
