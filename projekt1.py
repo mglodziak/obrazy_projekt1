@@ -27,15 +27,31 @@ def validate_count_parameters(count):
 
 def read_image(path):
     img=cv2.imread(str(path),cv2.IMREAD_UNCHANGED)
+    #img=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return img
+
+def convert_to_rgb(img):
     img=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
 
-def view_images(input_img, output_img):
+def view_mono_images(input_img, output_img):
     view, (ax1, ax2) = plt.subplots(1,2)
     view.suptitle("Before and after transformation")
-    ax1.imshow(input_img)
-    ax2.imshow(output_img)
+    ax1.imshow(input_img, cmap='gray', vmin=0, vmax=255)
+    ax2.imshow(output_img, cmap='gray', vmin=0, vmax=255)
     plt.show()
+
+def view_color_images(input_img, output_img):
+    view, (ax1, ax2) = plt.subplots(1,2)
+    view.suptitle("Before and after transformation")
+    ax1.imshow(input_img, vmin=0, vmax=255)
+    ax2.imshow(output_img, vmin=0, vmax=255)
+    plt.show()
+
+def show_image(img):
+    cv2.imshow('image', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 def transform_x(img):
     print("XXX")
@@ -49,13 +65,69 @@ def chose_transform(options, img):
     elif str(options["yyy"]) == "True":
         transform_y(img)
 
+def binary_mono(image, width, height):
+    img_out=np.zeros_like(image)
+    for i in range(width):
+        for j in range(height):
+            if image[i][j]<150:
+                img_out[i][j]=0
+            else:
+                img_out[i][j]=255
+    return img_out
+
+def binary_color(image, width, height):
+    img_out=np.zeros_like(image)
+    for i in range(width):
+        for j in range(height):
+            for k in range(3):
+                img_out[i,j,k]=img[i,j,k]-20
+
+
+##            if image[i,j,0]<150 and image[i,j,1]<100 and image[i,j,2]<40:
+##                img_out[i,j,0]=0
+##                img_out[i,j,1]=0
+##                img_out[i,j,2]=0
+##            else:
+##                img_out[i,j,0]=255
+##                img_out[i,j,1]=255
+##                img_out[i,j,2]=255
+                
+    return img_out
+            
+def mono_image(img):
+    width=img.shape[0]
+    height=img.shape[1]
+    img_out=binary_mono(img, width, height)
+    chose_transform(options, img)
+    view_mono_images(img,img_out)
+
+
+def color_image(img):
+    width=img.shape[0]
+    height=img.shape[1]
+    img_out=binary_color(img, width, height) ##
+    
+    view_color_images(img, img_out)
+
 
 options=get_arguments()
 count_given_parameters = validate_arguments(options)
 validate_count_parameters(count_given_parameters)
 img = read_image(options["path"])
-img_out = read_image("./Test_card.png")
-chose_transform(options, img)
-view_images(img,img_out)
+try:
+    if img.shape[2]:
+        img = convert_to_rgb(img)
+        color_image(img)
+        
+except:
+    #print("mono")
+    mono_image(img)
+
+
+#img_out = read_image("./Test_card.png")
+#img_out = convert_to_rgb(img_out)
+
+#show_image(img)
+#show_image(img_out)
 
 
