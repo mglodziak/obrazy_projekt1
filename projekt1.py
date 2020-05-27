@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 #import matplotlib.image as mpimg
 import cv2
 from normalization import *
+from entropy import *
 
 def get_arguments():
     parser=argparse.ArgumentParser(prog='projekt1', usage='%(prog)s [options]')
     parser.add_argument("-n", "--normalize", help="normalize image with 3 couples of points", action="store_true")
-    parser.add_argument("-y", "--yyy", help="dupas", action="store_true")
+    parser.add_argument("-e", "--entropy", help="entropy filter", action="store_true")
     parser.add_argument("-z", "--zzz", help="dup", action="store_true")
     parser.add_argument("-p", "--path", help="path to input png", required="True")
     results = vars(parser.parse_args())
@@ -64,6 +65,10 @@ def chose_transform_mono(options, img):
     if str(options["normalize"]) == "True":
         img_out=normalize_3_points_mono(img)
         return img_out
+    elif str(options["entropy"]) == "True":
+        img_out=entropy_mono(img)
+        return img_out
+        
    # elif str(options["yyy"]) == "True":
     #    transform_y(img)
         
@@ -71,8 +76,9 @@ def chose_transform_color(options, img):
     if str(options["normalize"]) == "True":
         img_out=normalize_3_points_color(img)
         return img_out
-    #elif str(options["yyy"]) == "True":
-     #   transform_y(img)
+    elif str(options["entropy"]) == "True":
+        img_out=entropy_color(img)
+        return img_out
 
 def binary_mono(image, width, height):
     img_out=np.zeros_like(image)
@@ -97,8 +103,8 @@ def mono_image(img):
     height=img.shape[1]
     #img_out=binary_mono(img, width, height)
     img_out=chose_transform_mono(options, img)
-    data=calculate_count_pixels(img_out)
-    make_histogram(data)
+    #data=calculate_count_pixels(img_out)
+    #make_histogram(data)
     view_mono_images(img,img_out)
 
 
