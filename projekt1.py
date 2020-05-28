@@ -9,7 +9,7 @@ from entropy import *
 def get_arguments():
     parser=argparse.ArgumentParser(prog='projekt1', usage='%(prog)s [options]')
     parser.add_argument("-n", "--normalize", help="normalize image with 3 couples of points", action="store_true")
-    parser.add_argument("-e", "--entropy", help="entropy filter", action="store_true")
+    parser.add_argument("-e", "--entropy", help="Calculate entropy", action="store_true")
     parser.add_argument("-z", "--zzz", help="dup", action="store_true")
     parser.add_argument("-p", "--path", help="path to input png", required="True")
     results = vars(parser.parse_args())
@@ -69,9 +69,6 @@ def chose_transform_mono(options, img):
         img_out=entropy_mono(img)
         return img_out
         
-   # elif str(options["yyy"]) == "True":
-    #    transform_y(img)
-        
 def chose_transform_color(options, img):
     if str(options["normalize"]) == "True":
         img_out=normalize_3_points_color(img)
@@ -120,13 +117,19 @@ options=get_arguments()
 count_given_parameters = validate_arguments(options)
 validate_count_parameters(count_given_parameters)
 img = read_image(options["path"])
+
+##img = convert_to_rgb(img)
+##color_image(img)
 try:
     if img.shape[2]:
+       # print('xxxx')
         img = convert_to_rgb(img)
         color_image(img)
         
+        
 except:
     #print("mono")
+   # print('yyyy')
     mono_image(img)
 
 
