@@ -1,11 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
 
 
 
 
 def calc_min(img, row, col, r):
-    min_value=img[row,col]
+   # min_value=img[row,col]
+    min_value=255
     width=img.shape[0]
     height=img.shape[1]   
 
@@ -47,6 +49,5 @@ def open_image(img):
     for i in range(height):
         for j in range(width):
             img_out[i,j]=calc_max(img_out1,i,j,r)
-    
     return img_out
     

@@ -6,12 +6,14 @@ import cv2
 from normalization import *
 from entropy import *
 from open_image import *
+from reconstruction import *
 
 def get_arguments():
     parser=argparse.ArgumentParser(prog='projekt1', usage='%(prog)s [options]')
     parser.add_argument("-n", "--normalize", help="normalize image with 3 couples of points", action="store_true")
     parser.add_argument("-e", "--entropy", help="Calculate entropy", action="store_true")
     parser.add_argument("-o", "--open", help="Otwarcie", action="store_true")
+    parser.add_argument("-r", "--reconstruction", help="Rekonstrukcja", action="store_true")
     parser.add_argument("-p", "--path", help="path to input png", required="True")
     results = vars(parser.parse_args())
     return results
@@ -72,7 +74,10 @@ def chose_transform_mono(options, img):
     elif str(options["open"]) == "True":
         img_out=open_image(img)
         return img_out
-        
+    elif str(options["reconstruction"]) == "True":
+        img_out=reconstruction(img)
+        return img_out
+    
 def chose_transform_color(options, img):
     if str(options["normalize"]) == "True":
         img_out=normalize_3_points_color(img)
@@ -83,12 +88,15 @@ def chose_transform_color(options, img):
     elif str(options["open"]) == "True":
         print("This function works only with mono images!. Exiting.")
         return 1
+    elif str(options["reconstruction"]) == "True":
+        print("This function works only with binary images!. Exiting.")
+        return 1
 
 def binary_mono(image, width, height):
     img_out=np.zeros_like(image)
     for i in range(width):
         for j in range(height):
-            if image[i][j]<150:
+            if image[i][j]<128:
                 img_out[i][j]=0
             else:
                 img_out[i][j]=255
@@ -117,8 +125,8 @@ def color_image(img):
     height=img.shape[1]
     #img_out=binary_color(img, width, height) ##
     img_out=chose_transform_color(options, img)
-    if img_out != 1:
-        view_color_images(img, img_out)
+    #if img_out != 1:
+    view_color_images(img, img_out)
 
 
 options=get_arguments()
@@ -128,6 +136,8 @@ img = read_image(options["path"])
 
 ##img = convert_to_rgb(img)
 ##color_image(img)
+
+
 try:
     if img.shape[2]:
        # print('xxxx')
